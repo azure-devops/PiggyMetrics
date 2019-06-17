@@ -346,6 +346,7 @@ input {
 	-ms-animation: 0.6s goleft ease-out;
 	animation: 0.6s goleft ease-out;
 	top:0; left: -18%; right: 300px; bottom: 0;
+	color: red;
 }
 #righttitle {
 	-webkit-animation: 0.6s goright ease-out;
