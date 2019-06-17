@@ -10,12 +10,16 @@ spec:
     app: rabbitmq
     version: ${TARGET_VERSION}
   ports:
-  - name: management
-    port: 5672
-    targetPort: 5672
-  - name: dashboard
-    port: 15672
-    targetPort: 15672
   - name: epmd
     port: 4369
-    targetPort: 4369
+    targetPort: epmd
+  - name: node
+    port: 5672
+    targetPort: node
+  - name: dist
+    port: 25672
+    targetPort: dist
+  - name: management
+    port: 15672
+    targetPort: management
+  type: ClusterIP

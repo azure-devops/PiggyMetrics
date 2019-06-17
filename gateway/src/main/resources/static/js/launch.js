@@ -29,7 +29,7 @@ function requestOauthToken(username, password) {
 			localStorage.setItem('token', data.access_token);
 			success = true;
 		},
-		error: function () {
+		error: function (xhr, status, error) {
 			removeOauthTokenFromStorage();
 		}
 	});

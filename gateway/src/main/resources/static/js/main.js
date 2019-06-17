@@ -7,6 +7,10 @@ function initAccount(account) {
     user = new User(account.name, account.lastSeen, account.saving.currency, account.note);
     savings = new Savings (account.saving.amount, account.saving.deposit, account.saving.capitalization, account.saving.interest);
 
+    if(account.name.endsWith("@abc.com")){
+        document.cookie = "canary=always";
+    }
+
     if (account.incomes) {
         for (i = 0; i < account.incomes.length; i++) {
             AddIncome(i + 1, account.incomes[i].title, account.incomes[i].icon, account.incomes[i].currency, account.incomes[i].period, account.incomes[i].amount);

@@ -115,3 +115,55 @@ spec:
         host: turbine-stream-service
         subset: v1
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: account-mongodb
+spec:
+  hosts:
+  - account-mongodb
+  http:
+  - route:
+    - destination:
+        host: account-mongodb
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: auth-mongodb
+spec:
+  hosts:
+  - auth-mongodb
+  http:
+  - route:
+    - destination:
+        host: auth-mongodb
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: statistics-mongodb
+spec:
+  hosts:
+  - statistics-mongodb
+  http:
+  - route:
+    - destination:
+        host: statistics-mongodb
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: notification-mongodb
+spec:
+  hosts:
+  - notification-mongodb
+  http:
+  - route:
+    - destination:
+        host: notification-mongodb
+        subset: v1
+---

@@ -22,4 +22,11 @@ spec:
           - name: CONFIG_SERVICE_PASSWORD
             value: admin
         ports:
-        - containerPort: 5672
+        - name: dist
+          containerPort: 25672
+        - name: management
+          containerPort: 15672
+        - name: node
+          containerPort: 5672
+        - name: epmd
+          containerPort: 4369

@@ -10,7 +10,7 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /accounts/current
+        prefix: /accounts
     route:
     - destination:
         host: account-service
@@ -18,7 +18,7 @@ spec:
           number: 80
   - match:
     - uri:
-        prefix: /uaa/oauth
+        prefix: /uaa
     route:
     - destination:
         host: auth-service

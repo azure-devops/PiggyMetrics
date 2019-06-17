@@ -1,15 +1,16 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: gateway
+  name: gateway-${TARGET_VERSION}
+  namespace: ${TARGET_NAMESPACE}
+  labels:
+    version: ${TARGET_VERSION}
 spec:
   selector:
     app: gateway
+    version: ${TARGET_VERSION}
   ports:
-  - name: management
-    port: 4000
-    targetPort: 4000
   - name: http
     port: 80
-    targetPort: 80
+    targetPort: 4000
   type: LoadBalancer

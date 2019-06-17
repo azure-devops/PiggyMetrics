@@ -1,16 +1,17 @@
-def folders = ["gateway"]
+def folders = ["config", "mongodb", "account-service", "auth-service", "gateway", "monitoring", "notification-service", "registry", "statistics-service", "turbine-stream-service"]
 
 def stepsForParallel = folders.collectEntries {
     ["echoing ${it}" : transformIntoStep(it)]
 }
-
 
 def transformIntoStep(inputString) {
     return {
         node {
             checkout scm
 
-            sh "cd ${inputString}; mvn clean package -DskipTests; cd .."
+            if(inputString != "mongodb") {
+                sh "cd ${inputString}; mvn clean package -DskipTests; cd .."
+            }
 
             acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
                 registryName: env.ACR_NAME, 
@@ -21,8 +22,6 @@ def transformIntoStep(inputString) {
         }
     }
 }
-
-def TARGET_VERSION = "canary"
 
 def userInput
 
@@ -49,8 +48,22 @@ node('master') {
     }
 
     stage('preview') {
+        acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+            configFilePaths: "scripts/deployment/mq.yaml", 
+            containerService: "$env.AKS_NAME | AKS",
+            enableConfigSubstitution: true, 
+            resourceGroupName: env.AKS_RES_GROUP,
+            secretNamespace: env.TARGET_NAMESPACE,
+            secretName: env.ACR_SECRET_NAME
+
+        acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+            configFilePaths: "scripts/service/mq.yaml", 
+            containerService: "$env.AKS_NAME | AKS",
+            enableConfigSubstitution: true, 
+            resourceGroupName: env.AKS_RES_GROUP
+
         for (int i=0; i<folders.size(); i++) {
-            withEnv(["IMAGE_TAG=${BUILD_NUMBER}", "TARGET_ROLE=${TARGET_VERSION}"]){
+            withEnv(["IMAGE_TAG=${BUILD_NUMBER}"]){
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
                     configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
@@ -59,17 +72,14 @@ node('master') {
                     resourceGroupName: env.AKS_RES_GROUP,
                     secretNamespace: env.TARGET_NAMESPACE,
                     secretName: env.ACR_SECRET_NAME
-                    
+
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
+                    configFilePaths: "scripts/service/${folders[i]}.yaml", 
                     containerService: "$env.AKS_NAME | AKS",
                     enableConfigSubstitution: true, 
-                    resourceGroupName: env.AKS_RES_GROUP,
-                    secretNamespace: env.TARGET_NAMESPACE
+                    resourceGroupName: env.AKS_RES_GROUP
             }
         }
-
-        // sh "kubectl apply -f scripts/canary/istio/gateway.yml"
     }
 
     stage('preview-test') {
@@ -78,9 +88,5 @@ node('master') {
 
     stage('switch') {
         
-    }
-    
-    stage('apply istio') {
-        sh "kubectl apply -f scripts/canary/istio/istio.yml"
     }
 }

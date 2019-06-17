@@ -105,9 +105,6 @@ function login() {
     if (requestOauthToken(username, password)) {
 
         initAccount(getCurrentAccount());
-        
-        document.cookie = "username=" + username;
-
         var userAvatar = $("<img />").attr("src","images/userpic.jpg");
         $(userAvatar).load(function() {
             setTimeout(initGreetingPage, 500);
@@ -129,6 +126,7 @@ function login() {
 
 function logout() {
     removeOauthTokenFromStorage();
+    document.cookie = "canary=never";
     location.reload();
 }
 
